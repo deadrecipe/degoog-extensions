@@ -1,0 +1,16 @@
+{
+  "name": "degoog-extensions",
+  "description": "Search enhancement plugins for degoog.",
+  "author": "deadrecipe",
+  "plugins": [
+    {
+      "path": "plugins/result-dates",
+      "name": "Result Dates",
+      "description": "Extracts dates from search result snippets and displays them as color-coded badges next to the URL.",
+      "version": "1.0.0",
+      "type": "slot"
+    }
+  ],
+  "themes": [],
+  "engines": []
+}
