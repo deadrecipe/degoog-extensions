@@ -9,6 +9,13 @@
       "description": "Extracts dates from search result snippets and displays them as color-coded badges next to the URL.",
       "version": "1.0.0",
       "type": "slot"
+    },
+    {
+      "path": "plugins/maps",
+      "name": "Maps",
+      "description": "Shows an embedded OpenStreetMap panel for location-based queries using Nominatim geocoding.",
+      "version": "1.0.0",
+      "type": "slot"
     }
   ],
   "themes": [],
