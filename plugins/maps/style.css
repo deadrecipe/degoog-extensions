@@ -8,22 +8,20 @@
 
 .maps-panel {
   display: flex;
-  gap: 1.25rem;
-  align-items: stretch;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .maps-info {
-  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.25rem 0;
+  gap: 0.3rem;
 }
 
 .maps-name {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary, #ffffff);
   line-height: 1.3;
@@ -43,7 +41,7 @@
 }
 
 .maps-address {
-  margin: 0.25rem 0 0;
+  margin: 0.15rem 0 0;
   font-size: 0.8125rem;
   line-height: 1.45;
   color: var(--text-secondary, #999);
@@ -56,8 +54,7 @@
 }
 
 .maps-link {
-  margin-top: auto;
-  padding-top: 0.5rem;
+  margin-top: 0.25rem;
   font-size: 0.8125rem;
   font-weight: 500;
   color: var(--primary, #1a73e8);
@@ -69,31 +66,14 @@
 }
 
 .maps-embed {
-  flex: 0 0 320px;
-  min-height: 220px;
+  width: 100%;
+  height: 200px;
 }
 
 .maps-embed iframe {
   width: 100%;
   height: 100%;
-  min-height: 220px;
   border: 0;
   border-radius: 12px;
   display: block;
-}
-
-@media (max-width: 640px) {
-  .maps-panel {
-    flex-direction: column;
-  }
-
-  .maps-embed {
-    flex: none;
-    width: 100%;
-    min-height: 200px;
-  }
-
-  .maps-embed iframe {
-    min-height: 200px;
-  }
 }

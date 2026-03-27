@@ -87,7 +87,7 @@ const _buildDisplayName = (address) => {
 export const slot = {
   id: "maps",
   name: "Maps",
-  position: "above-results",
+  position: "sidebar",
   description: "Shows an embedded OpenStreetMap for location-based queries using Nominatim geocoding.",
 
   settingsSchema: [],
