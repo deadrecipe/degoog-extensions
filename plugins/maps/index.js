@@ -2,6 +2,7 @@ const CACHE_TTL_MS = 60 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 200;
 const IMPORTANCE_THRESHOLD = 0.4;
 
+const FETCH_TIMEOUT_MS = 3000;
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const USER_AGENT = "degoog-maps-plugin/1.0";
 
@@ -13,6 +14,8 @@ let template = "";
 const REJECT_PATTERNS = /\b(how to|what is|what are|what does|what do|why does|why do|why is|when did|when does|when is|who is|who are|can i|should i|is there|are there|does it|do i|error|exception|stack ?trace|bug|debug|code|function|class|module|import|require|install|uninstall|download|upload|compile|runtime|syntax|tutorial|example|how|why|what|which|where do|config|setup|troubleshoot|fix|solve|buy|price|cost|cheap|deal|sale|order|shop|amazon|ebay|recipe|cook|ingredient|lyrics|song|album|movie|film|watch|stream|reddit|github|gitlab|stackoverflow|youtube|twitch|twitter|tiktok|instagram|facebook|wiki|wikipedia|vs |versus |compare|review|best|top \d|list of)\b/i;
 
 const LOCATION_KEYWORDS = /\b(map|maps|directions|direction to|near me|nearby|weather in|time in|timezone in|capital of|population of|area of|country|city of|state of|province of|located|location of|where is|gps|coordinates|latitude|longitude)\b/i;
+
+const LOOKS_LIKE_PLACE = /^[A-Z][a-zA-Z\u00C0-\u024F''.\- ]{1,50}(,\s*[A-Z][a-zA-Z\u00C0-\u024F''.\- ]+)*$/;
 
 const _cacheGet = (key) => {
   const expiresAt = cacheExpiry.get(key);
@@ -87,7 +90,7 @@ const _buildDisplayName = (address) => {
 export const slot = {
   id: "maps",
   name: "Maps",
-  position: "sidebar",
+  position: "above-sidebar",
   description: "Shows an embedded OpenStreetMap for location-based queries using Nominatim geocoding.",
 
   settingsSchema: [],
@@ -102,9 +105,10 @@ export const slot = {
     if (typeof query !== "string") return false;
     const q = query.trim();
     if (q.length < 2 || q.length > 100) return false;
-    if (LOCATION_KEYWORDS.test(q)) return true;
     if (REJECT_PATTERNS.test(q)) return false;
-    return true;
+    if (LOCATION_KEYWORDS.test(q)) return true;
+    if (LOOKS_LIKE_PLACE.test(q)) return true;
+    return false;
   },
 
   async execute(query) {
@@ -121,9 +125,13 @@ export const slot = {
         addressdetails: "1",
       })}`;
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
       const res = await fetch(url, {
         headers: { "User-Agent": USER_AGENT },
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       if (!res.ok) {
         result = { title: "", html: "" };
@@ -170,15 +178,15 @@ export const slot = {
       const osmLink = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=14/${lat}/${lon}`;
 
       const html = `<div class="maps-panel">` +
+        `<div class="maps-embed">` +
+        `<iframe src="${_esc(iframeSrc)}" width="100%" height="200" frameborder="0" loading="lazy"></iframe>` +
+        `</div>` +
         `<div class="maps-info">` +
         `<h3 class="maps-name">${shortName}</h3>` +
         (typeLabel ? `<span class="maps-type">${typeLabel}</span>` : "") +
         `<p class="maps-address">${displayName}</p>` +
         `<p class="maps-coords">${lat.toFixed(4)}, ${lon.toFixed(4)}</p>` +
         `<a class="maps-link" href="${_esc(osmLink)}" target="_blank" rel="noopener">View on OpenStreetMap →</a>` +
-        `</div>` +
-        `<div class="maps-embed">` +
-        `<iframe src="${_esc(iframeSrc)}" width="100%" height="250" frameborder="0" loading="lazy"></iframe>` +
         `</div>` +
         `</div>`;
 
